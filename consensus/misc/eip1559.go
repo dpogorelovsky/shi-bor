@@ -53,6 +53,7 @@ func VerifyEip1559Header(config *params.ChainConfig, parent, header *types.Heade
 
 // CalcBaseFee calculates the basefee of the header.
 func CalcBaseFee(config *params.ChainConfig, parent *types.Header) *big.Int {
+	fmt.Println(">>> CalcBaseFee called")
 	// If the current block is the first EIP-1559 block, return the InitialBaseFee.
 	if !config.IsLondon(parent.Number) {
 		return new(big.Int).SetUint64(params.InitialBaseFee)
@@ -65,6 +66,7 @@ func CalcBaseFee(config *params.ChainConfig, parent *types.Header) *big.Int {
 	)
 	// If the parent gasUsed is the same as the target, the baseFee remains unchanged.
 	if parent.GasUsed == parentGasTarget {
+		fmt.Println(">>> parent.GasUsed == parentGasTarget", parent.BaseFee.String())
 		return new(big.Int).Set(parent.BaseFee)
 	}
 	if parent.GasUsed > parentGasTarget {
@@ -77,7 +79,9 @@ func CalcBaseFee(config *params.ChainConfig, parent *types.Header) *big.Int {
 			common.Big1,
 		)
 
-		return x.Add(parent.BaseFee, baseFeeDelta)
+		a := x.Add(parent.BaseFee, baseFeeDelta)
+		fmt.Println(">>> parent.GasUsed > parentGasTarget", a.String())
+		return a
 	} else {
 		// Otherwise if the parent block used less gas than its target, the baseFee should decrease.
 		gasUsedDelta := new(big.Int).SetUint64(parentGasTarget - parent.GasUsed)
@@ -85,9 +89,12 @@ func CalcBaseFee(config *params.ChainConfig, parent *types.Header) *big.Int {
 		y := x.Div(x, parentGasTargetBig)
 		baseFeeDelta := x.Div(y, baseFeeChangeDenominator)
 
-		return math.BigMax(
+		a := math.BigMax(
 			x.Sub(parent.BaseFee, baseFeeDelta),
 			common.Big0,
 		)
+		fmt.Println(">>> } else {", a.String())
+
+		return a
 	}
 }
