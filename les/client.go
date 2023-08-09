@@ -97,6 +97,7 @@ func New(stack *node.Node, config *ethconfig.Config) (*LightEthereum, error) {
 		return nil, genesisErr
 	}
 	log.Info("Initialised chain configuration", "config", chainConfig)
+	log.Info("LES/CLIENT :::", "config", chainConfig)
 
 	peers := newServerPeerSet()
 	merger := consensus.NewMerger(chainDb)

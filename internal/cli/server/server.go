@@ -367,6 +367,8 @@ func (s *Server) setupGRPCServer(addr string) error {
 	}()
 
 	log.Info("GRPC Server started", "addr", addr)
+	log.Debug("GRPC Server started :::")
+	log.Warn("GRPC Server started :::")
 
 	return nil
 }
